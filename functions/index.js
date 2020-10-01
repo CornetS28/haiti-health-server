@@ -2,6 +2,8 @@ const functions = require("firebase-functions");
 const admin = require("firebase-admin");
 const app = require("express")();
 
+admin.initializeApp();
+
 app.get("/departments", (req, res) => {
   admin
     .firestore()
@@ -24,3 +26,4 @@ app.get("/departments", (req, res) => {
     })
     .catch((err) => console.error(err));
 });
+exports.api = functions.https.onRequest(app);
