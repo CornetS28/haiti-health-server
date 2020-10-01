@@ -1,9 +1,26 @@
-const functions = require('firebase-functions');
+const functions = require("firebase-functions");
+const admin = require("firebase-admin");
+const app = require("express")();
 
-// // Create and Deploy Your First Cloud Functions
-// // https://firebase.google.com/docs/functions/write-firebase-functions
-//
-// exports.helloWorld = functions.https.onRequest((request, response) => {
-//   functions.logger.info("Hello logs!", {structuredData: true});
-//   response.send("Hello from Firebase!");
-// });
+app.get("/departments", (req, res) => {
+  admin
+    .firestore()
+    .collection("departments")
+    .orderBy("createdAt", "desc")
+    .get()
+    .then((data) => {
+      let departments = [];
+      data.forEach((doc) =>
+        departments.push({
+          departmentId: doc.id,
+          ...doc.data(),
+          createdAt: new Date().toISOString(),
+          //OR
+          // departmentName: doc.data().departmentName,
+          // userHandle: doc.data().userHandle
+        })
+      );
+      return res.json(departments);
+    })
+    .catch((err) => console.error(err));
+});
