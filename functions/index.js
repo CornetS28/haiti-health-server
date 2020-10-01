@@ -26,4 +26,23 @@ app.get("/departments", (req, res) => {
     })
     .catch((err) => console.error(err));
 });
+
+app.post("/department", (req, res) => {
+  const newDepartment = {
+    departmentName: req.body.departmentName,
+    createdAt: admin.firestore.Timestamp.fromDate(new Date()),
+  };
+  admin
+    .firestore()
+    .collection("departments")
+    .add(newDepartment)
+    .then((doc) => {
+      res.json({ message: `department ${doc.id} created successfully!` });
+    })
+    .catch((err) => {
+      res.status(500).json({ error: "something went wrong!!" });
+      console.error(err);
+    });
+});
+
 exports.api = functions.https.onRequest(app);
