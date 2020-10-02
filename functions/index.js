@@ -16,10 +16,9 @@ const config = {
 const firebase = require("firebase");
 firebase.initializeApp(config);
 
+const db = admin.firestore();
 app.get("/departments", (req, res) => {
-  admin
-    .firestore()
-    .collection("departments")
+  db.collection("departments")
     .orderBy("createdAt", "desc")
     .get()
     .then((data) => {
@@ -42,10 +41,9 @@ app.get("/departments", (req, res) => {
 app.post("/department", (req, res) => {
   const newDepartment = {
     departmentName: req.body.departmentName,
-    createdAt: admin.firestore.Timestamp.fromDate(new Date()),
+    createdAt: new Date().toISOString(),
   };
-  admin
-    .firestore()
+  db
     .collection("departments")
     .add(newDepartment)
     .then((doc) => {
@@ -66,7 +64,7 @@ app.post("/signup", (req, res) => {
     email: req.body.email,
     password: req.body.password,
     confirmPassword: req.body.confirmPassword,
-    handle: req.body.handle
+    handle: req.body.handle,
   };
   // TODO: valite user data
 
@@ -81,7 +79,7 @@ app.post("/signup", (req, res) => {
     .catch((err) => {
       console.error(err);
       res.status(500).json({ error: err.code });
-    })
+    });
 });
 
 exports.api = functions.https.onRequest(app);
